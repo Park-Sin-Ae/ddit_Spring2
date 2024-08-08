@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.mapper.ILoginMapper">
+
+	<resultMap type="noticeMemberVO" id="noticeMemberMap">
+		<id property="memNo" column="mem_no"/>
+		<result property="memNo" column="mem_no"/>
+		<result property="memId" column="mem_id"/>
+		<result property="memPw" column="mem_pw"/>
+		<result property="memName" column="mem_name"/>
+		<result property="memGender" column="mem_gender"/>
+		<result property="memEmail" column="mem_email"/>
+		<result property="memPhone" column="mem_phone"/>
+		<result property="memPostcode" column="mem_postcode"/>
+		<result property="memAddress1" column="mem_address1"/>
+		<result property="memAddress2" column="mem_address2"/>
+		<result property="memProfileimg" column="mem_profileimg"/>
+		<result property="memRegdate" column="mem_regdate"/>
+		<collection property="authList" resultMap="noticeAuthMap"/>
+	</resultMap>
+	
+	<resultMap type="noticeMemberAuthVO" id="noticeAuthMap">
+		<result property="memNo" column="mem_no"/>
+		<result property="auth" column="auth"/>
+	</resultMap>
+	
+	<select id="idCheck" parameterType="string" resultType="noticeMemberVO">
+		SELECT 
+			MEM_NO,MEM_ID,MEM_PW,MEM_NAME,MEM_GENDER,MEM_EMAIL,MEM_PHONE,MEM_POSTCODE,
+			MEM_ADDRESS1,MEM_ADDRESS2,MEM_AGREE,MEM_PROFILEIMG,MEM_REGDATE
+		FROM NOTICEMEMBER
+		WHERE MEM_ID = #{memId}
+	</select>
+	
+	<insert id="signup" parameterType="noticeMemberVO" useGeneratedKeys="true">
+		<selectKey keyProperty="memNo" resultType="int" order="BEFORE">
+			SELECT SEQ_NOTICEMEMBER.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO NOTICEMEMBER(
+			MEM_NO,MEM_ID,MEM_PW,MEM_NAME,MEM_GENDER,MEM_EMAIL,MEM_PHONE,MEM_POSTCODE,
+			MEM_ADDRESS1,MEM_ADDRESS2,MEM_AGREE,MEM_PROFILEIMG,MEM_REGDATE, ENABLED
+		)VALUES(
+			#{memNo}, #{memId}, #{memPw}, #{memName}, #{memGender},
+			#{memEmail}, #{memPhone}, #{memPostcode}, #{memAddress1}, #{memAddress2}, #{memAgree},
+			#{memProfileimg}, SYSDATE, 1
+		)
+	</insert>
+	
+	<insert id="signupAuth" parameterType="int">
+		INSERT INTO NOTICEMEMBER_AUTH VALUES(#{memNo}, 'ROLE_MEMBER')
+	</insert>
+	
+	<select id="loginCheck" parameterType="noticeMemberVO" resultType="noticeMemberVO">
+		SELECT 
+			MEM_NO,MEM_ID,MEM_PW,MEM_NAME,MEM_GENDER,MEM_EMAIL,MEM_PHONE,MEM_POSTCODE,
+			MEM_ADDRESS1,MEM_ADDRESS2,MEM_AGREE,MEM_PROFILEIMG,MEM_REGDATE
+		FROM NOTICEMEMBER
+		WHERE MEM_ID = #{memId}
+		AND MEM_PW = #{memPw}
+	</select>
+	
+	<select id="findId" parameterType="noticeMemberVO" resultType="noticeMemberVO">
+		SELECT 
+			MEM_ID
+		FROM NOTICEMEMBER
+		WHERE MEM_EMAIL = #{memEmail}
+		AND MEM_NAME = #{memName}
+	</select>
+	
+	<select id="readByUserId" parameterType="string" resultMap="noticeMemberMap">
+		SELECT 
+			M.MEM_NO,MEM_ID,MEM_PW,MEM_NAME,MEM_GENDER,MEM_EMAIL,MEM_PHONE,MEM_POSTCODE,
+			MEM_ADDRESS1,MEM_ADDRESS2,MEM_AGREE,MEM_PROFILEIMG,MEM_REGDATE, AUTH
+		FROM NOTICEMEMBER M LEFT OUTER JOIN NOTICEMEMBER_AUTH MA ON(M.MEM_NO = MA.MEM_NO)
+		WHERE MEM_ID = #{memId}
+	</select>
+</mapper>

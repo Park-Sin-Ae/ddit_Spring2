@@ -1,0 +1,166 @@
+┌─────────────────────────────
+│	실전 스프링 웹 개발
+│	::: 2024-05-14
+└─────────────────────────────
+
+	[1장: 스프링 개발환경]
+	
+	# 개발 환경
+	
+	Tool : Spring Tool Suite(STS) 3.9.15(eclipse 4.16)
+	Java : JDK1.8
+	Oracle : Oracle 11g XE
+	Server : Apache-Tomcat 8.5.x
+	Mybatis : 3.5.x
+	SpringFramework : 5.3.25
+	
+		** egovFramework(전자정부프레임워크)와 비교했을 때, 현재 버전이 실행환경
+		   4.1.0에서 사용하는 버전과 차이가 없습니다.
+		** 많은 STS 버전들 중, 3.9.15 버전이 Plugins를 설치하거나 설정을 진행할 때
+		       에러 발생 확률이 가장 적음
+		       
+	[2장 : 프로젝트 생성]
+	
+	# 실전 스프링 웹 개발 준비
+	
+	1. STS 설치 후 실행
+	2. STS 설정
+	- window > preferences로 들어감
+	- 인코딩(UTF-8)및 폰트 설정
+	- Java 설정
+		> Installed JREs > JDK1.8 설정
+	3. 스프링 프로젝트 만들기
+	- Spring Legacy Project 생성
+		> 프로젝트 명 : Spring2Project
+		> 패키지 : kr.or.ddit(프로젝트 base package)
+		> template : Spring MVC Project
+		
+		# MVC 프로젝트 구성 확인
+		- pom.xml													: 메이븐 프로젝트 빌드 파일
+		- src/ main/java											: 자바 소스 경로	
+		- src/main/resources										: 리소스 파일 경로
+		- src/.../WEB-INF/web.xml									: 웹 컨테이너 설정 파일
+		- src/.../WEB-INF/spring/root-context/xml					: 스프링 설정 파일
+		- src/.../WEB-INF/spring/appServlet/servlet-context.xml		: 스프링 웹 설정 파일
+		- src/.../WEB-INF/views										: 뷰 파일 경로
+		
+	4. 웹 서버 설정
+	- overview : timeout 120s	/ port 80 설정
+	- module : path '/' 설정
+
+	5. 프로젝트 환경설정
+	- Deployment Assembly : Maven Dependency 확인
+	- Java Build Path : [3대장 확인] JDK, Server , Maven
+	- Java Compiler : compliance level 1.8 확인
+	- Project Facets : Dynamic Web Module 3.1, Java 1.8 설정
+						Runtimes 탭 내, Tomcat 설정
+				
+	6. pom.xml 설정
+	- java-version : 1.8
+	- org.springframework-version : 5.3.25
+	- javax.servlet : 3.1.0
+	- plugins source 1.8 / plugin target 1.8
+	
+		# Maven 적용
+		- 프로젝트 우 클릭 > Run As > Maven Clean 및 Maven Build
+			(Goals : complie)
+	
+	7. 웹 컨테이너 설정(web.xml)
+	- version : 3.1
+	- schemaLocation : web-app_3_1
+	
+	8. 인코딩 필터 적용
+	- 웹 컨테이너 설정(web.xml)
+	- encodingFilter 설정
+	
+	9. 로그 레벨 설정(log4j.xml)
+	- root level : debug
+	
+	10. 프로젝트 실행
+	- HomeController, home.jsp
+	- http://localhost 실행
+	- home.jsp 내 Hello World! 표시되면 확인 완료
+	
+	[ 3장 : 컨트롤러 요청 매핑 ]
+	- package : kr.or.ddit.controller.board
+	- class : BoardController
+	
+	[ 4장 : 컨트롤러 응답 ]
+	- package : kr.or.ddit
+	- class : HomeController, RestHomeController
+	
+	[ 5장 : 컨트롤러 요청 처리 ]
+	- package : kr.or.ddit.controller.member
+	- class: MemberController, AjaxMemberController, AjaxMemberFileController
+	
+	[ 6장 : 데이터 전달자 모델 ]
+	- package : kr.or.controller.model
+	- class : ModelMemberController,
+			ModelAttributeMemberController,
+			RedirectAttributeMemberController
+			
+	[ 7장 : JSP ]
+  	- package : kr.or.ddit.controller.jsp
+   	- class : 
+      JSPHomeController,
+      JSTLHomeController,
+      JSPFmtController,
+      JSPELController
+      
+  	[ 8장 : 스프링 폼 태그 ]
+   	- package : kr.or.ddit.controller.jsp
+   	- class : 
+      JSPFormTagController
+      textfield.JSPFormTextFieldTagController
+      password.JSPFormPasswordTagController
+      textarea.JSPFormTextareaTagController
+      checkboxes.JSPFormCheckboxesTagController
+      checkbox.JSPFormCheckboxTagController
+      radio.JSPFormRadioTagController
+      hidden.JSPFormHiddenTagController
+      label.JSPFormLabelTagController
+      button.JSPFormButtonTagController
+      validation.JSPFormValidationController
+      
+	[ 9장 : 입력 유효성 검증 ] 
+  	- package : kr.or.ddit.controller.validation
+  	- class : ValidationController
+   
+  	[ 11장 : 데이터베이스 연동 ]
+   	- package : kr.or.ddit.controller.database
+   	- class : 
+      DatabaseConnectController
+      MybatisController
+      
+   	[ 12장 : 마이바티스 ]
+   	- package : kr.or.ddit.controller.database
+   	- class : 
+      MybatisController,
+      CrudBoardController,
+      CrudMemberController
+      
+   	[ Tiles를 활용한 CRUD ]
+   	- package : kr.or.ddit.controller.tiles
+   	- class : 
+      TilesSettingsController,
+      crud.notice.ImageUpload,
+      crud.notice.NoticeDownloadController,
+      crud.notice.NoticeDownloadView,
+      crud.notice.NoticeInsertController,
+      crud.notice.NoticeLoginController,
+      crud.notice.NoticeModifyController,
+      crud.notice.NoticeProfileController,
+      crud.notice.NoticeRetrieveController
+      
+  	[ 13장 : 파일 업로드 ]
+   	- package : kr.or.ddit.controller.file
+   	- class :
+      item01.FileUploadController01
+      item02.FileUploadController02
+      item03.FileUploadController03
+      
+   	[ 14장 : AOP ]
+   	- package : kr.or.ddit.aop
+   	- class : 
+      AOPController
+	

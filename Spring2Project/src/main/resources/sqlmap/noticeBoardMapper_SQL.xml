@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.mapper.INoticeMapper">
+	
+	<sql id="noticeSearch">
+		<if test="searchType != null and searchType == 'title'">
+			AND (BO_TITLE LIKE '%' || #{searchWord} || '%')
+		</if>
+		<if test="searchType != null and searchType == 'writer'">
+			AND (BO_WRITER LIKE '%' || #{searchWord} || '%')
+		</if>
+	</sql>
+
+	<resultMap type="noticeVO" id="noticeMap">
+		<id property="boNo" column="bo_no"/>
+		<result property="boNo" column="bo_no"/>
+		<result property="boTitle" column="bo_title"/>
+		<result property="boContent" column="bo_content"/>
+		<result property="boWriter" column="bo_writer"/>
+		<result property="boDate" column="bo_date"/>
+		<result property="boHit" column="bo_hit"/>
+		<collection property="noticeFileList" resultMap="noticeFileMap"/>
+	</resultMap>
+	
+	<resultMap type="noticeFileVO" id="noticeFileMap">
+		<id property="fileNo" column="file_no"/>
+		<result property="fileNo" column="file_no"/>
+		<result property="fileName" column="file_name"/>
+		<result property="fileSize" column="file_size"/>
+		<result property="fileFancysize" column="file_fancysize"/>
+		<result property="fileMime" column="file_mime"/>
+		<result property="fileSavepath" column="file_savepath"/>
+		<result property="fileDowncount" column="file_downcount"/>
+	</resultMap>
+
+   <insert id="insertNotice" parameterType="noticeVO" useGeneratedKeys="true">
+      <selectKey keyProperty="boNo" resultType="int" order="BEFORE">
+         select seq_notice.nextval from dual
+      </selectKey>
+   
+      insert into notice(
+         bo_no, bo_title, bo_content, bo_writer, bo_date   
+      )values(
+      	#{boNo}, #{boTitle}, #{boContent}, #{boWriter}, sysdate
+      )
+   </insert>
+   
+   <insert id="insertNoticeFile" parameterType="noticeFileVO">
+   		INSERT INTO NOTICEFILE(
+   			FILE_NO, BO_NO, FILE_NAME, FILE_SIZE, FILE_FANCYSIZE,
+   			FILE_MIME, FILE_SAVEPATH, FILE_DOWNCOUNT
+   		)VALUES(
+   			SEQ_NOTICEFILE.NEXTVAL, #{boNo}, #{fileName}, #{fileSize}, #{fileFancysize},
+   			#{fileMime}, #{fileSavepath}, 0
+   		)
+   		
+   </insert>
+   <update id="incrementHit" parameterType="int">
+   		UPDATE NOTICE
+   		SET
+   			BO_HIT = BO_HIT + 1
+   		WHERE BO_NO = #{boNo}
+   </update>
+   
+   <select id="selectNotice" parameterType="int" resultMap="noticeMap">
+   		SELECT
+   			N.BO_NO, BO_TITLE, BO_CONTENT, BO_WRITER, BO_DATE, BO_HIT,
+   			FILE_NO, FILE_NAME, FILE_SIZE, FILE_FANCYSIZE, FILE_MIME, FILE_SAVEPATH, FILE_DOWNCOUNT
+   		FROM NOTICE N LEFT OUTER JOIN NOTICEFILE NF ON(N.BO_NO = NF.BO_NO)
+   		WHERE N.BO_NO = #{boNo}
+   </select>
+   
+   <update id="updateNotice" parameterType="noticeVO">
+   		UPDATE NOTICE
+   		SET
+   			BO_TITLE = #{boTitle},
+   			BO_CONTENT = #{boContent},
+   			BO_DATE = SYSDATE
+   		WHERE BO_NO = #{boNo}
+   </update>
+    <!-- 공지사항 글 삭제 -->
+   <delete id="deleteNotice" parameterType="int">
+      delete from notice
+      where bo_no = #{boNo}
+   </delete>
+   
+   <select id="selectNoticeCount" parameterType="pagingVO" resultType="int">
+      select count(bo_no)
+      from notice
+      where 1=1
+      <include refid="noticeSearch"/>
+   </select>
+   
+     <select id="selectNoticeList" parameterType="pagingVO" resultType="noticeVO">
+      select
+         b.*
+      from(   
+         select 
+            a.*, row_number() over(order by a.bo_no desc) rnum
+         from(   
+            select 
+               bo_no, bo_title, bo_content, bo_writer, bo_date, bo_hit
+            from notice
+            where 1=1
+      		<include refid="noticeSearch"/>
+            order by bo_no desc
+            )a
+         )b
+         <![CDATA[
+            where b.rnum >= #{startRow} and b.rnum <= #{endRow}         
+         ]]>
+   </select>
+   
+   <select id="noticeDownload" parameterType="int" resultType="noticeFileVO">
+   		SELECT
+   			FILE_NO, BO_NO, FILE_NAME, FILE_SIZE, FILE_FANCYSIZE,
+   			FILE_MIME, FILE_SAVEPATH, FILE_DOWNCOUNT
+   		FROM NOTICEFILE
+   		WHERE FILE_NO = #{fileNo}
+   </select>
+   
+   <update id="incrementNoticeDowncount" parameterType="int">
+   		UPDATE NOTICEFILE
+   		SET
+   			FILE_DOWNCOUNT = FILE_DOWNCOUNT + 1
+   		WHERE FILE_NO = #{fileNo}
+   </update>
+   
+   <select id="selectNoticeFile" parameterType="int" resultType="noticeFileVO">
+   		SELECT
+   			FILE_SAVEPATH
+   		FROM NOTICEFILE
+   		WHERE FILE_NO = #{fileNo}
+   </select>
+   
+   <delete id="deleteNoticeFile" parameterType="int">
+   		DELETE FROM NOTICEFILE
+   		WHERE FILE_NO = #{fileNo}
+   </delete>
+   
+   <delete id="deleteNoticeFileByBoNo" parameterType="int">
+   		DELETE FROM NOTICEFILE
+   		WHERE BO_NO = #{boNo}
+   </delete>
+ 
+   
+</mapper>

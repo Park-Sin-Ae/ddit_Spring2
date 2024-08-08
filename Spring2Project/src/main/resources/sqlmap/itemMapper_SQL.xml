@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.mapper.IItemMapper">
+	
+	<insert id="create" parameterType="item">
+		INSERT INTO ITEM(
+			ITEM_ID, ITEM_NAME, DESCRIPTION, PICTURE_URL
+		)VALUES(
+			SEQ_ITEM.NEXTVAL, #{itemName}, #{description}, #{pictureUrl}
+		)
+	</insert>
+	
+	<select id="list" resultType="item">
+		SELECT
+			ITEM_ID, ITEM_NAME, DESCRIPTION, PICTURE_URL
+		FROM ITEM
+	</select>
+	
+	<select id="read" parameterType="int" resultType="item">
+		SELECT
+			ITEM_ID, ITEM_NAME, DESCRIPTION, PICTURE_URL
+		FROM ITEM
+		WHERE ITEM_ID = #{itemId}
+	</select>
+	
+	<select id="getPicture" parameterType="int" resultType="string">
+		SELECT PICTURE_URL
+		FROM ITEM
+		WHERE ITEM_ID = #{itemId}
+	</select>
+	
+	<update id="modify" parameterType="item">
+		UPDATE ITEM
+		SET
+			ITEM_NAME = #{itemName},
+			DESCRIPTION = #{description},
+			PICTURE_URL = #{pictureUrl}
+		WHERE ITEM_ID = #{itemId}
+	</update>
+	
+	<select id="remove" parameterType="int">
+		DELETE FROM ITEM
+		WHERE ITEM_ID = #{itemId}
+	</select>
+</mapper>

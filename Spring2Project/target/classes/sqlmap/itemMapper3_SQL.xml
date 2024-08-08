@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.mapper.IItemMapper3">
+	<insert id="create" parameterType="item3">
+		INSERT INTO ITEM3(
+			ITEM_ID, ITEM_NAME, DESCRIPTION
+		)VALUES(
+			SEQ_ITEM3.NEXTVAL, #{itemName}, #{description}
+		)
+	</insert>
+
+	<insert id="addAttach" parameterType="string">
+		INSERT INTO ITEM3_ATTACH(
+			FULLNAME, ITEM_ID, REGDATE
+		)VALUES(
+			#{fileName}, SEQ_ITEM3.CURRVAL, SYSDATE
+		)
+	</insert>	
+	
+	<select id="list" resultType="item3">
+		SELECT
+			ITEM_ID, ITEM_NAME, DESCRIPTION
+		FROM ITEM3
+		ORDER BY ITEM_ID DESC 
+	</select>
+	
+	<select id="read" parameterType="int" resultType="item3">
+		SELECT 
+			ITEM_ID, ITEM_NAME, DESCRIPTION
+		FROM ITEM3
+		WHERE ITEM_ID = #{itemId}
+	</select>
+	
+	<select id="getAttach" parameterType="int" resultType="string">
+		SELECT FULLNAME
+		FROM ITEM3_ATTACH
+		WHERE ITEM_ID = #{itemId}
+	</select>
+	
+	<update id="modify" parameterType="item3">
+		UPDATE ITEM3
+		SET
+			ITEM_NAME = #{itemName},
+			DESCRIPTION = #{description}
+		WHERE ITEM_ID = #{itemId}
+	</update>
+	
+	<delete id="deleteAttach" parameterType="int">
+		DELETE FROM ITEM3_ATTACH
+		WHERE ITEM_ID = #{itemId}
+	</delete>
+	
+	<insert id="replaceAttach">
+		INSERT INTO ITEM3_ATTACH(
+			FULLNAME, ITEM_ID, REGDATE
+		)VALUES(
+			#{fullName}, #{itemId}, SYSDATE
+		)
+	</insert>
+	
+	<delete id="remove" parameterType="int">
+		DELETE FROM ITEM3
+		WHERE ITEM_ID = #{itemId}
+	</delete>
+</mapper>

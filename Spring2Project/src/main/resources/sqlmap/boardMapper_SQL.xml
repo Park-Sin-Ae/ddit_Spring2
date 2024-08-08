@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.mapper.IBoardMapper">
+
+	<insert id="create" parameterType="board">
+		INSERT INTO BOARD(
+			BOARD_NO, TITLE, CONTENT, WRITER, REG_DATE
+		)VALUES(
+			SEQ_BOARD.NEXTVAL, #{title}, #{content}, #{writer}, SYSDATE
+		)		
+	</insert>
+	
+	<select id="list" resultType="board">
+		SELECT
+			BOARD_NO, TITLE, CONTENT, WRITER, REG_DATE
+		FROM BOARD
+		ORDER BY BOARD_NO DESC
+	</select>
+	
+	<select id="read" parameterType="int" resultType="board">
+		SELECT
+			BOARD_NO, TITLE, CONTENT, WRITER, REG_DATE
+		FROM BOARD
+		WHERE BOARD_NO = #{boardNo}
+	</select>
+	
+	<update id="update" parameterType="board">
+		UPDATE BOARD
+		SET	
+			TITLE = #{title},
+			CONTENT = #{content},
+			REG_DATE = SYSDATE
+		WHERE BOARD_NO = #{boardNo}
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		DELETE FROM BOARD WHERE BOARD_NO2 = #{boardNo}
+	</delete>
+	
+	<select id="search"  parameterType="board" resultType="board">
+		SELECT
+			BOARD_NO, TITLE, CONTENT, WRITER, REG_DATE
+		FROM BOARD
+		WHERE 1 = 1
+		<if test="title != null and title != ''">
+			AND TITLE LIKE '%'||#{title}||'%'
+		</if>
+		ORDER BY BOARD_NO DESC
+	</select>
+</mapper>

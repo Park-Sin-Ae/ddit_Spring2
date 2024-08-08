@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.mapper.IMemberMapper">
+	
+	<resultMap type="crudMember" id="memberMap">
+		<id property="userNo" column="user_no"/>
+		<result property="userNo" column="user_no"/>
+		<result property="userId" column="user_id"/>
+		<result property="userPw" column="user_pw"/>
+		<result property="userName" column="user_name"/>
+		<result property="regDate" column="reg_date"/>
+		<result property="updDate" column="upd_date"/>
+		<collection property="authList" resultMap="authMap"/>
+	</resultMap>
+
+	<resultMap type="crudMemberAuth" id="authMap">
+		<result property="userNo" column="user_no"/>
+		<result property="auth" column="auth"/>
+	</resultMap>
+	
+	<insert id="create" parameterType="crudMember" useGeneratedKeys="true">
+		<selectKey keyProperty="userNo" resultType="int" order="BEFORE">
+			SELECT SEQ_MEMBER.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO MEMBER(
+			USER_NO, USER_ID, USER_PW, USER_NAME, REG_DATE, UPD_DATE
+		)VALUES(
+			#{userNo}, #{userId}, #{userPw}, #{userName}, SYSDATE, SYSDATE
+		)
+	</insert>
+	
+	<insert id="createAuth" parameterType="crudMemberAuth">
+		INSERT INTO MEMBER_AUTH(
+			USER_NO, AUTH
+		)VALUES(
+			#{userNo}, #{auth}
+		)
+	</insert>
+	
+	<select id="list" resultType="crudMember">
+		SELECT
+			USER_NO, USER_ID, USER_PW, USER_NAME, REG_DATE, UPD_DATE
+		FROM MEMBER
+		ORDER BY USER_NO DESC
+		
+	</select>
+	
+	<select id="read" parameterType="int" resultMap="memberMap">
+		SELECT
+			M.USER_NO, USER_ID, USER_PW, USER_NAME, REG_DATE, UPD_DATE, AUTH
+		FROM MEMBER M LEFT OUTER JOIN MEMBER_AUTH MA ON(M.USER_NO = MA.USER_NO)
+		WHERE M.USER_NO = ${userNo}
+	</select>
+	
+	<update id="modify" parameterType="crudMember">
+		UPDATE MEMBER
+		SET
+			USER_NAME = #{userName}
+		WHERE USER_NO = #{userNo}
+	</update>
+	
+	<delete id="deleteAuth" parameterType="int">
+		DELETE FROM MEMBER_AUTH
+		WHERE USER_NO = #{userNo}
+	</delete>
+	
+	<delete id="delete" parameterType="int">
+		DELETE FROM MEMBER
+		WHERE USER_NO = #{userNo}
+	</delete>
+</mapper>

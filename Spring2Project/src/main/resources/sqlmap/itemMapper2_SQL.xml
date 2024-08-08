@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.mapper.IItemMapper2">
+	<insert id="create" parameterType="item2">
+		INSERT INTO ITEM2(
+			ITEM_ID, ITEM_NAME, DESCRIPTION, PICTURE_URL, PICTURE_URL2
+		)VALUES(
+			SEQ_ITEM2.NEXTVAL, #{itemName}, #{description}, #{pictureUrl}, #{pictureUrl2}
+		)
+	</insert>
+	
+	<select id="list" resultType="item2">
+		SELECT
+			ITEM_ID, ITEM_NAME, DESCRIPTION, PICTURE_URL, PICTURE_URL2
+		FROM ITEM2
+		ORDER BY ITEM_ID DESC
+	</select>
+	
+	<select id="read" parameterType="int" resultType="item2">
+		SELECT
+			ITEM_ID, ITEM_NAME, DESCRIPTION, PICTURE_URL, PICTURE_URL2
+		FROM ITEM2
+		WHERE ITEM_ID = #{itemId}
+	</select>
+	
+	<select id="getPicture" parameterType="int" resultType="string">
+		SELECT PICTURE_URL
+		FROM ITEM2
+		WHERE ITEM_ID = #{itemId}
+	</select>
+	
+	<select id="getPicture2" parameterType="int" resultType="string">
+		SELECT PICTURE_URL2
+		FROM ITEM2
+		WHERE ITEM_ID = #{itemId}
+	</select>
+
+	<update id="modify" parameterType="item2">
+		UPDATE ITEM2
+		SET
+			ITEM_NAME = #{itemName},
+			DESCRIPTION = #{description},
+			PICTURE_URL = #{pictureUrl},
+			PICTURE_URL2 = #{pictureUrl2}
+		WHERE ITEM_ID = #{itemId}
+	</update>	
+	
+	<delete id="remove" parameterType="int">
+		DELETE FROM ITEM2
+		WHERE ITEM_ID = #{itemId}
+	</delete>
+</mapper>
